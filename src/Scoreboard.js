@@ -22,23 +22,23 @@ const reducer = (state, action) => {
 				}
 			};
 		case 'incrementQuarter':
-			return state;
+			return initialState;
 		case 'changeTeamLogo':
-			return state;
+			return initialState;
 		case 'changeTeamName':
 			return { ...state, teamName: action.value };
 		case 'changePossession':
-			return state;
+			return initialState;
 		case 'changeTeamInfo':
-			return state;
+			return initialState;
 		case 'changeYardsToFirst':
-			return state;
+			return initialState;
 		case 'endDown':
-			return state;
+			return initialState;
 		case 'reset':
 			return initialState;
 		default:
-			return state;
+			return initialState;
 	};
 };
 
@@ -47,6 +47,7 @@ const reducer = (state, action) => {
 const Scoreboard = ({ isAdmin }) => {
 	const { scoreboardState, setScoreboardState } = useContext(ScoreboardContext);
 	const [state, dispatch] = useReducer(reducer, scoreboardState);
+	const hasChanges = JSON.stringify(state) !== JSON.stringify(initialState); 
 
 	// Rendering
 	const renderAdminControls = () => {
@@ -63,6 +64,8 @@ const Scoreboard = ({ isAdmin }) => {
 						<button onClick={() => dispatch({ type: `endDown` })}>End Down</button>
 						<button onClick={() => dispatch({ type: `changeYardsToFirst` })}>Change Yards to First Down</button>
 						<button onClick={() => dispatch({ type: `turnover` })}>Turnover</button>
+						<button className={`${hasChanges ? 'enabled' : 'disabled'}`} onClick={() => setScoreboardState(state)}>save</button>
+						<button className={`${hasChanges ? 'enabled' : 'disabled'}`} onClick={() => dispatch({ type: 'reset' })}>new game</button>
 					</div>
 				</div>
 			</div>
@@ -82,11 +85,13 @@ const Scoreboard = ({ isAdmin }) => {
 		);
 	};
 
+
 	return (
 		<div className={`${PRE}`}>
 			<div className={`${PRE}-title`}>Football Scoreboard</div>
 			<div className={`${PRE}-teams`}>
 				{TEAMS.map((team, teamIndex) => {
+					console.log({state});
 					const { hasPossession, score, teamName } = state.teamData[teamIndex];
 
 					return (
@@ -98,17 +103,15 @@ const Scoreboard = ({ isAdmin }) => {
 				})}
 			</div>
 			{isAdmin && renderAdminControls()}
-			<button onClick={() => setScoreboardState(state)}>save</button>
-			<button onClick={() => dispatch({ type: 'reset' })}>new game</button>
 			{!isAdmin &&
 				<Link to='/admin'>
 					<button>Admin</button>
 				</Link>
 			}
 			{isAdmin &&
-			<Link to='/'>
-				<button>Back to Home</button>
-			</Link>
+				<Link to='/'>
+					<button>Back to Home</button>
+				</Link>
 			}
 		</div>
 	);
