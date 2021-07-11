@@ -1,3 +1,21 @@
 .scoreboard {
   background-color: #ebebeb;
 }
+.scoreboard-admin-title {
+  font-weight: bold;
+}
+.scoreboard-team-container {
+  display: flex;
+}
+.scoreboard-team-container.left {
+  flex-direction: row;
+}
+.scoreboard-team-container.right {
+  flex-direction: row-reverse;
+}
+.scoreboard-teams {
+  display: flex;
+}
+.scoreboard-title {
+  font-weight: bold;
+}
