@@ -1,21 +1,15 @@
-import { useReducer } from 'react';
+import { useContext, useReducer } from 'react';
+import initialState from './InitialState.json';
+import { Link } from 'react-router-dom';
+import ScoreboardContext from './ScoreboardContext';
 import "./Scoreboard.css";
 
 const FIELD_LENGTH = 100;
-const MAX_DOWNS = 4;
+const NUM_DOWNS = 4;
+const NUM_QUARTERS = 4;
 const PRE = 'scoreboard';
 const TEAMS = ['home', 'away'];
 
-const initialState = {
-	teamData: TEAMS.map(() => ({
-		score: 0,
-		teamName: 'name'
-	})),
-	teamPossessing: 0,
-	currentYardLine: 25,
-	down: 1,
-	yardsToFirst: 10,
-};
 
 const reducer = (state, action) => {
 	switch(action.type) {
@@ -27,6 +21,8 @@ const reducer = (state, action) => {
 					}
 				}
 			};
+		case 'incrementQuarter':
+			return state;
 		case 'changeTeamLogo':
 			return state;
 		case 'changeTeamName':
@@ -49,7 +45,8 @@ const reducer = (state, action) => {
 
 
 const Scoreboard = ({ isAdmin }) => {
-	const [state, dispatch] = useReducer(reducer, initialState);
+	const { scoreboardState, setScoreboardState } = useContext(ScoreboardContext);
+	const [state, dispatch] = useReducer(reducer, scoreboardState);
 
 	// Rendering
 	const renderAdminControls = () => {
@@ -101,6 +98,18 @@ const Scoreboard = ({ isAdmin }) => {
 				})}
 			</div>
 			{isAdmin && renderAdminControls()}
+			<button onClick={() => setScoreboardState(state)}>save</button>
+			<button onClick={() => dispatch({ type: 'reset' })}>new game</button>
+			{!isAdmin &&
+				<Link to='/admin'>
+					<button>Admin</button>
+				</Link>
+			}
+			{isAdmin &&
+			<Link to='/'>
+				<button>Back to Home</button>
+			</Link>
+			}
 		</div>
 	);
 };

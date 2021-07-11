@@ -1,0 +1,21 @@
+{
+	"teamData": [
+		{
+			"teamInfo": "",
+			"teamLogo": "",
+			"teamName": "",
+			"score": 0
+		},
+		{
+			"teamInfo": "",
+			"teamLogo": "",
+			"teamName": "",
+			"score": 0
+		}
+	],
+	"teamPossessing": 0,
+	"currentDown": 1,
+	"currentQuarter": 1,
+	"currentYardLine": 25,
+	"yardsToFirst": 10
+}

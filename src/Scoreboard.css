@@ -1,6 +1,11 @@
+html,
+body {
+  background-color: #ebebeb;
+  margin: 0;
+  padding: 0;
+}
 .scoreboard {
   align-items: center;
-  background-color: #ebebeb;
   display: flex;
   flex-direction: column;
   justify-content: center;
