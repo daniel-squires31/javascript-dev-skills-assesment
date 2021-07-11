@@ -10,7 +10,6 @@ const PRE_ADMIN = PRE + '-admin';
 
 // Constants
 const DOWNS = ['1st', '2nd', '3rd', '4th'];
-const FIELD_LENGTH = 100;
 const TIMEOUTS = ['', '', ''];
 const QUARTERS = ['1st', '2nd', '3rd', '4th'];
 const TEAMS = ['home', 'away'];
@@ -30,11 +29,23 @@ const reducer = (state, action) => {
 				}
 			};
 		case 'changeTeamName':
-			return { ...state, teamName: action.value };
+			return { ...state, teamData: 
+				{...state.teamData, [action.id]: 
+					{...state.teamData[action.id], 
+						teamName: action.value
+					}
+				}
+			};
 		case 'changeYardsUntilFirst':
 			return { ...state, yardsToFirst: action.value };
 		case 'decrementTimeout':
-			return initialState;
+			return { ...state, teamData: 
+				{...state.teamData, [action.id]: 
+					{...state.teamData[action.id], 
+						timeoutsLeft: state.teamData[action.id].timeoutsLeft > 0 ? state.teamData[action.id].timeoutsLeft - 1 : 0
+					}
+				}
+			};
 		case 'endDown':
 			const currentDown = state.currentDown + 1;
 			if (currentDown > DOWNS.length) {
@@ -43,7 +54,7 @@ const reducer = (state, action) => {
 			}
 			return { ...state, currentDown}
 		case 'incrementQuarter':
-			const currentQuarter = state.currentQuarter + 1 <= QUARTERS.length ? state.currentQuarter + 1 : 1;
+			const currentQuarter = state.currentQuarter + 1 <= QUARTERS.length ? state.currentQuarter + 1 : state.currentQuarter;
 			return { ...state, currentQuarter};
 		case 'incrementScore':
 			return { ...state, teamData: 
@@ -53,12 +64,18 @@ const reducer = (state, action) => {
 					}
 				}
 			};
-		case 'reset':
-			return initialState;
 		case 'resetTimeouts':
+			return { ...state, teamData: 
+				{...state.teamData, [action.id]: 
+					{...state.teamData[action.id], 
+						timeoutsLeft: TIMEOUTS.length
+					}
+				}
+			};
+		case 'totalReset':
 			return initialState;
 		default:
-			return initialState;
+			return state;
 	};
 };
 
@@ -91,13 +108,12 @@ const Scoreboard = ({ isAdmin }) => {
 				<input placeholder="Enter yards until First Down" onChange={(e) => dispatch({ type: 'changeYardsUntilFirst', value: e.target.value })} />
 				<button onClick={() => dispatch({ type: `endDown` })}>End Down</button>
 				<button onClick={() => dispatch({ type: `incrementQuarter` })}>Increment Quarter</button>
-				<button onClick={() => dispatch({ type: `changeYardsUntilFirst` })}>Change Yards to First Down</button>
 				<button onClick={() => dispatch({ type: `turnover` })}>Turnover</button>
-				<button className={`${hasChanges ? 'enabled' : 'disabled'}`} onClick={() => setScoreboardState(state)}>save</button>
-				<button className={`${hasChanges ? 'enabled' : 'disabled'}`} onClick={() => dispatch({ type: 'reset' })}>new game</button>
+				<button className={`${hasChanges ? 'enabled' : 'disabled'}`} onClick={() => setScoreboardState(state)}>Save</button>
+				<button className={`${hasChanges ? 'enabled' : 'disabled'}`} onClick={() => dispatch({ type: 'totalReset' })}>New Game</button>
 			</div>
-		)
-	}
+		);
+	};
 
 	const renderTeamControls = (team, teamIndex) => {	
 		return (
@@ -111,6 +127,9 @@ const Scoreboard = ({ isAdmin }) => {
 				</div>
 				<div className={`${PRE_ADMIN}-team-controls-data`}>
 					<div className={`${PRE_ADMIN}-team-controls-data-label`}>Change {state.teamData[teamIndex].teamName}'s data:</div>
+					<button onClick={() => dispatch({ type: `decrementTimeout`, id: teamIndex })}>Use Timeout</button>
+					<button onClick={() => dispatch({ type: `resetTimeouts`, id: teamIndex })}>Reset Timeouts</button>
+					<input placeholder="New Team Name" onChange={(e) => dispatch({ type: 'changeTeamName', id: teamIndex, value: e.target.value })} />
 					<input placeholder="New Logo URL" onChange={(e) => dispatch({ type: 'changeTeamLogo', id: teamIndex, value: e.target.value })} />
 				</div>
 			</div>
@@ -129,15 +148,15 @@ const Scoreboard = ({ isAdmin }) => {
 					return (
 						<div className={`${PRE}-team-container ${teamIndex === 0 ? 'left' : 'right'}`}>
 							{isPossessing &&
-								<img className={`${PRE}-team-possession-icon`} src={'https://www.clipartmax.com/png/small/1-11974_american-football-clipart-american-football-ball-vector.png'} />
+								<img className={`${PRE}-team-possession-icon`} src={'https://www.clipartmax.com/png/small/1-11974_american-football-clipart-american-football-ball-vector.png'} alt={'possession icon'} />
 							}
 							<div className={`${PRE}-team-name`}>{teamName}</div>
 							<div className={`${PRE}-team-logo-timeouts`}>
-								<img className={`${PRE}-team-logo`} src={teamLogo} />
+								<img className={`${PRE}-team-logo`} src={teamLogo} alt='team logo'/>
 								<div className={`${PRE}-team-timeouts`}>
 									<div className={`${PRE}-team-timeouts-label`}>Timeouts: </div>
 									{TIMEOUTS.map((to, toIndex) => (
-										<div className={`${PRE}-team-timeout-bubble ${toIndex > timeoutsLeft ? 'empty' : 'filled'}`} />
+										<div className={`${PRE}-team-timeout-bubble ${toIndex >= timeoutsLeft ? 'empty' : 'filled'}`} />
 									))}
 								</div>
 							</div>
@@ -146,9 +165,8 @@ const Scoreboard = ({ isAdmin }) => {
 					);
 				})}
 			</div>
+			<div className={`${PRE}-quarter`}>{DOWNS[state.currentDown - 1]} and {state.yardsToFirst}</div>
 			<div className={`${PRE}-quarter`}>Quarter: {state.currentQuarter}</div>
-			<div className={`${PRE}-down`}>Down: {state.currentDown}</div>
-			<div className={`${PRE}-yards-till-first`}>YTF: {state.yardsToFirst}</div>
 
 			{isAdmin && renderAdminControls()}
 			{!isAdmin &&

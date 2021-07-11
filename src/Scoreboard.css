@@ -5,6 +5,7 @@ body {
   padding: 0;
 }
 button {
+  font-size: 20px;
   margin: 5px;
 }
 .scoreboard {
@@ -20,7 +21,6 @@ button {
 .scoreboard-admin-general-controls {
   align-items: center;
   display: flex;
-  flex-direction: column;
   justify-content: center;
 }
 .scoreboard-admin-general-controls-container {
@@ -55,18 +55,22 @@ button {
   flex-direction: row-reverse;
 }
 .scoreboard-team-logo {
-  height: 100px;
+  height: 120px;
 }
 .scoreboard-team-logo-timeouts {
   align-items: center;
   display: flex;
   flex-direction: column;
 }
+.scoreboard-team-name {
+  font-size: 40px;
+  margin: 15px;
+}
 .scoreboard-team-possession-icon {
-  height: 20px;
+  height: 30px;
 }
 .scoreboard-team-score {
-  font-size: 50px;
+  font-size: 70px;
   font-weight: bold;
   margin: 20px;
 }
