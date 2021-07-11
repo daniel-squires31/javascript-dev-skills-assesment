@@ -1,3 +1,5 @@
+// Daniel Squires 
+
 # Swell Javascript Developer Skills Assessment
 Hello, congrats on being identified as a potential employee of Swell. You were sent this skills assessment as a way to identify your current strengths and weaknesses as a potential hire for Swell as a Javascript Software Engineer. Doing well on this assessment is absolutely critical to receiving a job offer.
 
