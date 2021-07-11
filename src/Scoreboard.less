@@ -30,6 +30,31 @@ html, body {
 				flex-direction: row-reverse;
 			}
 		}
+
+		&-logo {
+			height: 100px;
+		}
+
+		&-timeout-bubble {
+			border-radius: 50%;
+			border: 1px solid #000;
+			height: 5px;
+			margin: 3px;
+			width: 5px;
+
+			&.empty {
+				background-color: #ebebeb;
+			}
+
+			&.filled {
+				background-color: #000;
+			}
+		}
+
+		&-timeouts {
+			align-items: center;
+			display: flex;
+		}
 	}
 
 	&-teams {

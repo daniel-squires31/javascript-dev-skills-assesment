@@ -2,14 +2,16 @@
 	"teamData": [
 		{
 			"teamInfo": "",
-			"teamLogo": "",
+			"teamLogo": "https://www.pngfind.com/pngs/m/70-703185_football-field-black-football-helmet-hd-photo-black.png",
 			"teamName": "",
+			"timeoutsLeft": 3,
 			"score": 0
 		},
 		{
 			"teamInfo": "",
-			"teamLogo": "",
+			"teamLogo": "https://lh3.googleusercontent.com/proxy/L3w63rueBVGCQZde36OeaoG1671fNrDkuQmZLnzZCqfxRBSOJ3DMz63dOlESOuk9YO0EA-4X-mL6onDl3z_XwkHQQiUqPUeQ-yDfKsLlyeEHjl79zRwU5VUfkalHb0qrk6j8iVps8uGS-2B8bTaQ9TIeAZlKgCarjA",
 			"teamName": "",
+			"timeoutsLeft": 3,
 			"score": 0
 		}
 	],

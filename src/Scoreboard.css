@@ -24,6 +24,26 @@ body {
 .scoreboard-team-container.right {
   flex-direction: row-reverse;
 }
+.scoreboard-team-logo {
+  height: 100px;
+}
+.scoreboard-team-timeout-bubble {
+  border-radius: 50%;
+  border: 1px solid #000;
+  height: 5px;
+  margin: 3px;
+  width: 5px;
+}
+.scoreboard-team-timeout-bubble.empty {
+  background-color: #ebebeb;
+}
+.scoreboard-team-timeout-bubble.filled {
+  background-color: #000;
+}
+.scoreboard-team-timeouts {
+  align-items: center;
+  display: flex;
+}
 .scoreboard-teams {
   display: flex;
 }
