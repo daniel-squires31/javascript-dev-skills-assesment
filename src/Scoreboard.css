@@ -1,11 +1,17 @@
 .scoreboard {
+  align-items: center;
   background-color: #ebebeb;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 .scoreboard-admin-title {
   font-weight: bold;
+  text-align: center;
 }
 .scoreboard-team-container {
   display: flex;
+  margin: 10px;
 }
 .scoreboard-team-container.left {
   flex-direction: row;

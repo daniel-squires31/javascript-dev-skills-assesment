@@ -9,6 +9,9 @@ const App = () => {
 				<Route path='/' exact>
 					<Scoreboard />
 				</Route>
+				<Route path='/admin' exact>
+					<Scoreboard isAdmin />
+				</Route>
 			</Switch>
 		</Router>
 	);

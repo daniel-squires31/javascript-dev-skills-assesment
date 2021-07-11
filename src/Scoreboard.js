@@ -1,39 +1,44 @@
 import { useReducer } from 'react';
 import "./Scoreboard.css";
 
+const FIELD_LENGTH = 100;
+const MAX_DOWNS = 4;
 const PRE = 'scoreboard';
 const TEAMS = ['home', 'away'];
 
 const initialState = {
-	// homeTeamData: {
-	// 	score: 0,
-	// 	name: '',
-	// 	hasPossession: true,
-	// },
-	// awayTeamData: {
-	// 	score: 0,
-	// 	name: '',
-	// 	hasPossession: true,
-	// },
 	teamData: TEAMS.map(() => ({
-		hasPossession: true,
 		score: 0,
 		teamName: 'name'
 	})),
+	teamPossessing: 0,
+	currentYardLine: 25,
 	down: 1,
 	yardsToFirst: 10,
 };
 
 const reducer = (state, action) => {
 	switch(action.type) {
-		case `incrementScore${action.id}`:
-			const teamData = state.teamData;
-			console.log('data', teamData[action.id]);
-			console.log('action', action)
-			teamData[action.id].score = teamData[action.id].score + action.value;
-			return { ...state, teamData};
-		case 'changeTeamName1':
+		case 'incrementScore':
+			return { ...state, teamData: 
+				{...state.teamData, [action.id]: 
+					{...state.teamData[action.id], 
+						score: state.teamData[action.id].score + action.value
+					}
+				}
+			};
+		case 'changeTeamLogo':
+			return state;
+		case 'changeTeamName':
 			return { ...state, teamName: action.value };
+		case 'changePossession':
+			return state;
+		case 'changeTeamInfo':
+			return state;
+		case 'changeYardsToFirst':
+			return state;
+		case 'endDown':
+			return state;
 		case 'reset':
 			return initialState;
 		default:
@@ -43,8 +48,7 @@ const reducer = (state, action) => {
 
 
 
-const Scoreboard = () => {
-	const isAdmin = true;
+const Scoreboard = ({ isAdmin }) => {
 	const [state, dispatch] = useReducer(reducer, initialState);
 
 	// Rendering
@@ -56,20 +60,27 @@ const Scoreboard = () => {
 				<div className={`${adminPre}-title`}>ADMIN</div>
 				<div className={`${adminPre}-controls`}>
 					<div className={`${adminPre}-team-controls-container`}>
-						{TEAMS.map((team, teamIndex) => {
-							const { hasPossession, score, teamName } = state.teamData[teamIndex];
-							
-							return (
-								<div className={`${adminPre}-team-controls ${teamIndex === 0 ? 'left' : 'right'}`}>
-									<button onClick={() => dispatch({ type: `incrementScore${teamIndex}`, id: teamIndex, value: 6 })}>Touchdown</button>
-									<button onClick={() => dispatch({ type: `incrementScore${teamIndex}`, id: teamIndex, value: 1 })}>Extra Point</button>
-									<button onClick={() => dispatch({ type: `incrementScore${teamIndex}`, id: teamIndex, value: 3 })}>Field Goal</button>
-									<button onClick={() => dispatch({ type: `incrementScore${teamIndex}`, id: teamIndex, value: 2 })}>2-pt. Conversion</button>
-								</div>
-							);
-						})}
+						{TEAMS.map(renderTeamControls)}
+					</div>
+					<div className={`${adminPre}-general-controls-container`}>
+						<button onClick={() => dispatch({ type: `endDown` })}>End Down</button>
+						<button onClick={() => dispatch({ type: `changeYardsToFirst` })}>Change Yards to First Down</button>
+						<button onClick={() => dispatch({ type: `turnover` })}>Turnover</button>
 					</div>
 				</div>
+			</div>
+		);
+	};
+
+	const renderTeamControls = (team, teamIndex) => {
+		const adminPre = PRE + '-admin';
+						
+		return (
+			<div className={`${adminPre}-team-controls ${teamIndex === 0 ? 'left' : 'right'}`}>
+				<button onClick={() => dispatch({ type: `incrementScore`, id: teamIndex, value: 6 })}>Touchdown</button>
+				<button onClick={() => dispatch({ type: `incrementScore`, id: teamIndex, value: 1 })}>Extra Point</button>
+				<button onClick={() => dispatch({ type: `incrementScore`, id: teamIndex, value: 3 })}>Field Goal</button>
+				<button onClick={() => dispatch({ type: `incrementScore`, id: teamIndex, value: 2 })}>2-pt. Conversion</button>
 			</div>
 		);
 	};
