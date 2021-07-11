@@ -15,12 +15,12 @@ const QUARTERS = ['1st', '2nd', '3rd', '4th'];
 const TEAMS = ['home', 'away'];
 
 // State management
-const reducer = (state, action) => {
-	switch(action.type) {
+const reducer = (state, action) => { // YouTube: Codevolution - https://www.youtube.com/channel/UC80PWRj_ZU8Zu0HSMNVwKWw
+	switch (action.type) {
 		case 'changePossession':
 			const teamPossessing = !state.teamPossessing;
 			return { ...state, currentDown: 1, teamPossessing, yardsToFirst: 10,}
-		case 'changeTeamLogo':
+		case 'changeTeamLogo': // helped w/ double-firing https://stackoverflow.com/questions/55055793/react-usereducer-hook-fires-twice-how-to-pass-props-to-reducer
 			return { ...state, teamData: 
 				{...state.teamData, [action.id]: 
 					{...state.teamData[action.id], 
@@ -72,8 +72,15 @@ const reducer = (state, action) => {
 					}
 				}
 			};
+		case 'setYardLine':
+			return { ...state, currentYardLine: action.value};
 		case 'totalReset':
 			return initialState;
+		case 'turnover':
+			const newTeam = state.teamPossessing === 0 ? 1 : 0;
+			return { ...state, currentDown: 1, teamPossessing: newTeam, yardsToFirst: 10,}
+		case 'undoChanges':
+			return action.value
 		default:
 			return state;
 	};
@@ -83,8 +90,8 @@ const reducer = (state, action) => {
 // Rendering
 const Scoreboard = ({ isAdmin }) => {
 	const { scoreboardState, setScoreboardState } = useContext(ScoreboardContext);
-	const [state, dispatch] = useReducer(reducer, scoreboardState);
-	const hasChanges = JSON.stringify(state) !== JSON.stringify(initialState); 
+	const [state, dispatch] = useReducer(reducer, scoreboardState); // update state w/ useReducer: https://stackoverflow.com/questions/57719325/how-to-update-an-array-within-object-with-usereducer
+	const hasChanges = JSON.stringify(state) !== JSON.stringify(scoreboardState); // comparing two objects: https://www.samanthaming.com/tidbits/33-how-to-compare-2-objects/
 
 	const renderAdminControls = () => {
 		return (
@@ -106,10 +113,12 @@ const Scoreboard = ({ isAdmin }) => {
 		return (
 			<div className={`${PRE_ADMIN}-general-controls`}>
 				<input placeholder="Enter yards until First Down" onChange={(e) => dispatch({ type: 'changeYardsUntilFirst', value: e.target.value })} />
+				<input placeholder="Enter current yard line" onChange={(e) => dispatch({ type: 'setYardLine', value: e.target.value })} />
 				<button onClick={() => dispatch({ type: `endDown` })}>End Down</button>
 				<button onClick={() => dispatch({ type: `incrementQuarter` })}>Increment Quarter</button>
 				<button onClick={() => dispatch({ type: `turnover` })}>Turnover</button>
 				<button className={`${hasChanges ? 'enabled' : 'disabled'}`} onClick={() => setScoreboardState(state)}>Save</button>
+				<button className={`${hasChanges ? 'enabled' : 'disabled'}`} onClick={() => dispatch({ type: 'undoChanges', value: scoreboardState })}>Undo Changes</button>
 				<button className={`${hasChanges ? 'enabled' : 'disabled'}`} onClick={() => dispatch({ type: 'totalReset' })}>New Game</button>
 			</div>
 		);
@@ -117,7 +126,7 @@ const Scoreboard = ({ isAdmin }) => {
 
 	const renderTeamControls = (team, teamIndex) => {	
 		return (
-			<div className={`${PRE_ADMIN}-team-controls ${teamIndex === 0 ? 'left' : 'right'}`}>
+			<div className={`${PRE_ADMIN}-team-controls ${teamIndex === 0 ? 'left' : 'right'}`} key={`team-controls-${teamIndex}`}>
 				<div className={`${PRE_ADMIN}-team-controls-scoring`}>
 					<div className={`${PRE_ADMIN}-team-controls-scoring-label`}>Increment {state.teamData[teamIndex].teamName}'s score:</div>
 					<button onClick={() => dispatch({ type: `incrementScore`, id: teamIndex, value: 6 })}>Touchdown</button>
@@ -146,7 +155,7 @@ const Scoreboard = ({ isAdmin }) => {
 					const isPossessing = state.teamPossessing === teamIndex;
 
 					return (
-						<div className={`${PRE}-team-container ${teamIndex === 0 ? 'left' : 'right'}`}>
+						<div className={`${PRE}-team-container ${teamIndex === 0 ? 'left' : 'right'}`} key={`team-container-${teamIndex}`}>
 							{isPossessing &&
 								<img className={`${PRE}-team-possession-icon`} src={'https://www.clipartmax.com/png/small/1-11974_american-football-clipart-american-football-ball-vector.png'} alt={'possession icon'} />
 							}
@@ -156,7 +165,7 @@ const Scoreboard = ({ isAdmin }) => {
 								<div className={`${PRE}-team-timeouts`}>
 									<div className={`${PRE}-team-timeouts-label`}>Timeouts: </div>
 									{TIMEOUTS.map((to, toIndex) => (
-										<div className={`${PRE}-team-timeout-bubble ${toIndex >= timeoutsLeft ? 'empty' : 'filled'}`} />
+										<div className={`${PRE}-team-timeout-bubble ${toIndex >= timeoutsLeft ? 'empty' : 'filled'}`} key={`timeout-bubble-${teamIndex}-${toIndex}`} />
 									))}
 								</div>
 							</div>
@@ -165,7 +174,7 @@ const Scoreboard = ({ isAdmin }) => {
 					);
 				})}
 			</div>
-			<div className={`${PRE}-quarter`}>{DOWNS[state.currentDown - 1]} and {state.yardsToFirst}</div>
+			<div className={`${PRE}-quarter`}>{DOWNS[state.currentDown - 1]} and {state.yardsToFirst} on the {state.currentYardLine} yard line</div>
 			<div className={`${PRE}-quarter`}>Quarter: {state.currentQuarter}</div>
 
 			{isAdmin && renderAdminControls()}
@@ -176,7 +185,7 @@ const Scoreboard = ({ isAdmin }) => {
 			}
 			{isAdmin &&
 				<Link to='/'>
-					<button onClick={()=> console.log('worked')}>Back to Home</button>
+					<button onClick={() => dispatch({ type: 'undoChanges', value: scoreboardState })}>Back to Home</button>
 				</Link>
 			}
 		</div>
