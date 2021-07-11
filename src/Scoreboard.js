@@ -1,4 +1,4 @@
-import { useContext, useReducer } from 'react';
+import React, { useContext, useReducer } from 'react';
 import initialState from './InitialState.json';
 import { Link } from 'react-router-dom';
 import ScoreboardContext from './ScoreboardContext';
@@ -17,10 +17,11 @@ const TEAMS = ['home', 'away'];
 // State management
 const reducer = (state, action) => { // YouTube: Codevolution - https://www.youtube.com/channel/UC80PWRj_ZU8Zu0HSMNVwKWw
 	switch (action.type) {
-		case 'changePossession':
+		case 'changePossession': {
 			const teamPossessing = !state.teamPossessing;
 			return { ...state, currentDown: 1, teamPossessing, yardsToFirst: 10,}
-		case 'changeTeamLogo': // helped w/ double-firing https://stackoverflow.com/questions/55055793/react-usereducer-hook-fires-twice-how-to-pass-props-to-reducer
+		}
+		case 'changeTeamLogo': {// helped w/ double-firing https://stackoverflow.com/questions/55055793/react-usereducer-hook-fires-twice-how-to-pass-props-to-reducer
 			return { ...state, teamData: 
 				{...state.teamData, [action.id]: 
 					{...state.teamData[action.id], 
@@ -28,7 +29,8 @@ const reducer = (state, action) => { // YouTube: Codevolution - https://www.yout
 					}
 				}
 			};
-		case 'changeTeamName':
+		}
+		case 'changeTeamName': {
 			return { ...state, teamData: 
 				{...state.teamData, [action.id]: 
 					{...state.teamData[action.id], 
@@ -36,9 +38,11 @@ const reducer = (state, action) => { // YouTube: Codevolution - https://www.yout
 					}
 				}
 			};
-		case 'changeYardsUntilFirst':
+		}
+		case 'changeYardsUntilFirst': {
 			return { ...state, yardsToFirst: action.value };
-		case 'decrementTimeout':
+		}
+		case 'decrementTimeout': {
 			return { ...state, teamData: 
 				{...state.teamData, [action.id]: 
 					{...state.teamData[action.id], 
@@ -46,17 +50,20 @@ const reducer = (state, action) => { // YouTube: Codevolution - https://www.yout
 					}
 				}
 			};
-		case 'endDown':
+		}
+		case 'endDown': {
 			const currentDown = state.currentDown + 1;
 			if (currentDown > DOWNS.length) {
 				const teamPossessing = state.teamPossessing === 0 ? 1 : 0;
 				return { ...state, currentDown: 1, teamPossessing, yardsToFirst: 10,}
 			}
 			return { ...state, currentDown}
-		case 'incrementQuarter':
+		}
+		case 'incrementQuarter': {
 			const currentQuarter = state.currentQuarter + 1 <= QUARTERS.length ? state.currentQuarter + 1 : state.currentQuarter;
 			return { ...state, currentQuarter};
-		case 'incrementScore':
+		}
+		case 'incrementScore': {
 			return { ...state, teamData: 
 				{...state.teamData, [action.id]: 
 					{...state.teamData[action.id], 
@@ -64,7 +71,8 @@ const reducer = (state, action) => { // YouTube: Codevolution - https://www.yout
 					}
 				}
 			};
-		case 'resetTimeouts':
+		}
+		case 'resetTimeouts': {
 			return { ...state, teamData: 
 				{...state.teamData, [action.id]: 
 					{...state.teamData[action.id], 
@@ -72,22 +80,28 @@ const reducer = (state, action) => { // YouTube: Codevolution - https://www.yout
 					}
 				}
 			};
-		case 'setYardLine':
+		}
+		case 'setYardLine': {
 			return { ...state, currentYardLine: action.value};
-		case 'totalReset':
+		}
+		case 'totalReset': {
 			return initialState;
-		case 'turnover':
+		}
+		case 'turnover': {
 			const newTeam = state.teamPossessing === 0 ? 1 : 0;
 			return { ...state, currentDown: 1, teamPossessing: newTeam, yardsToFirst: 10,}
-		case 'undoChanges':
+		}
+		case 'undoChanges': {
 			return action.value
+		}
 		default:
 			return state;
-	};
+	}
 };
 
 
 // Rendering
+// eslint-disable-next-line react/prop-types
 const Scoreboard = ({ isAdmin }) => {
 	const { scoreboardState, setScoreboardState } = useContext(ScoreboardContext);
 	const [state, dispatch] = useReducer(reducer, scoreboardState); // update state w/ useReducer: https://stackoverflow.com/questions/57719325/how-to-update-an-array-within-object-with-usereducer
@@ -128,14 +142,14 @@ const Scoreboard = ({ isAdmin }) => {
 		return (
 			<div className={`${PRE_ADMIN}-team-controls ${teamIndex === 0 ? 'left' : 'right'}`} key={`team-controls-${teamIndex}`}>
 				<div className={`${PRE_ADMIN}-team-controls-scoring`}>
-					<div className={`${PRE_ADMIN}-team-controls-scoring-label`}>Increment {state.teamData[teamIndex].teamName}'s score:</div>
+					<div className={`${PRE_ADMIN}-team-controls-scoring-label`}>Increment {state.teamData[teamIndex].teamName}s score:</div>
 					<button onClick={() => dispatch({ type: `incrementScore`, id: teamIndex, value: 6 })}>Touchdown</button>
 					<button onClick={() => dispatch({ type: `incrementScore`, id: teamIndex, value: 1 })}>Extra Point</button>
 					<button onClick={() => dispatch({ type: `incrementScore`, id: teamIndex, value: 3 })}>Field Goal</button>
 					<button onClick={() => dispatch({ type: `incrementScore`, id: teamIndex, value: 2 })}>2-pt. Conversion</button>
 				</div>
 				<div className={`${PRE_ADMIN}-team-controls-data`}>
-					<div className={`${PRE_ADMIN}-team-controls-data-label`}>Change {state.teamData[teamIndex].teamName}'s data:</div>
+					<div className={`${PRE_ADMIN}-team-controls-data-label`}>Change {state.teamData[teamIndex].teamName}s data:</div>
 					<button onClick={() => dispatch({ type: `decrementTimeout`, id: teamIndex })}>Use Timeout</button>
 					<button onClick={() => dispatch({ type: `resetTimeouts`, id: teamIndex })}>Reset Timeouts</button>
 					<input placeholder="New Team Name" onChange={(e) => dispatch({ type: 'changeTeamName', id: teamIndex, value: e.target.value })} />

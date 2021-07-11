@@ -1,9 +1,11 @@
 import { createContext, useEffect, useMemo, useState } from "react";
+import React from 'react';
 import initialState from './InitialState.json';
 
 
 const ScoreboardContext = createContext(); // YouTube: Codevolution - https://www.youtube.com/channel/UC80PWRj_ZU8Zu0HSMNVwKWw
 
+// eslint-disable-next-line react/prop-types
 const ScoreboardProvider = ({children}) => {
 	const state = localStorage.getItem('scoreboardState') ? JSON.parse(localStorage.getItem('scoreboardState')) : initialState; // Was experiencing this error: https://thisinterestsme.com/fix-unexpected-token-o-in-json/
 	const [scoreboardState, setScoreboardState] = useState(state);

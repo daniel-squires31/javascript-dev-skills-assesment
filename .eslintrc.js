@@ -1,11 +1,11 @@
-module.exports = {
+export default {
     "env": {
         "browser": true,
         "es2021": true
     },
     "extends": [
-        "plugin:react/recommended",
-        "standard"
+        "eslint:recommended",
+        "plugin:react/recommended"
     ],
     "parserOptions": {
         "ecmaFeatures": {
