@@ -4,17 +4,47 @@ body {
   margin: 0;
   padding: 0;
 }
+button {
+  margin: 5px;
+}
 .scoreboard {
   align-items: center;
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
+.scoreboard-admin {
+  background-color: #dddddd;
+  margin-top: 20px;
+}
+.scoreboard-admin-general-controls {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.scoreboard-admin-general-controls-container {
+  margin: 20px;
+}
+.scoreboard-admin-team-controls {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-bottom: 15px;
+}
+.scoreboard-admin-team-controls-container {
+  margin: 20px 20px 50px;
+}
+.scoreboard-admin-team-controls-data-label,
+.scoreboard-admin-team-controls-scoring-label {
+  margin-right: 15px;
+}
 .scoreboard-admin-title {
   font-weight: bold;
   text-align: center;
 }
 .scoreboard-team-container {
+  align-items: center;
   display: flex;
   margin: 10px;
 }
@@ -26,6 +56,19 @@ body {
 }
 .scoreboard-team-logo {
   height: 100px;
+}
+.scoreboard-team-logo-timeouts {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+}
+.scoreboard-team-possession-icon {
+  height: 20px;
+}
+.scoreboard-team-score {
+  font-size: 50px;
+  font-weight: bold;
+  margin: 20px;
 }
 .scoreboard-team-timeout-bubble {
   border-radius: 50%;
@@ -46,6 +89,8 @@ body {
 }
 .scoreboard-teams {
   display: flex;
+  justify-content: space-evenly;
+  width: 100%;
 }
 .scoreboard-title {
   font-weight: bold;

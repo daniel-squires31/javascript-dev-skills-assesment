@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import ScoreboardContext from './ScoreboardContext';
 import "./Scoreboard.css";
 
-// Class name prefixes
+// Class prefixes
 const PRE = 'scoreboard';
 const PRE_ADMIN = PRE + '-admin';
 
@@ -22,11 +22,15 @@ const reducer = (state, action) => {
 			const teamPossessing = !state.teamPossessing;
 			return { ...state, currentDown: 1, teamPossessing, yardsToFirst: 10,}
 		case 'changeTeamLogo':
-			return initialState;
+			return { ...state, teamData: 
+				{...state.teamData, [action.id]: 
+					{...state.teamData[action.id], 
+						teamLogo: `${action.value}`
+					}
+				}
+			};
 		case 'changeTeamName':
 			return { ...state, teamName: action.value };
-		case 'changeTeamInfo':
-			return initialState;
 		case 'changeYardsUntilFirst':
 			return { ...state, yardsToFirst: action.value };
 		case 'decrementTimeout':
@@ -34,7 +38,7 @@ const reducer = (state, action) => {
 		case 'endDown':
 			const currentDown = state.currentDown + 1;
 			if (currentDown > DOWNS.length) {
-				const teamPossessing = !state.teamPossessing;
+				const teamPossessing = state.teamPossessing === 0 ? 1 : 0;
 				return { ...state, currentDown: 1, teamPossessing, yardsToFirst: 10,}
 			}
 			return { ...state, currentDown}
@@ -96,14 +100,19 @@ const Scoreboard = ({ isAdmin }) => {
 	}
 
 	const renderTeamControls = (team, teamIndex) => {	
-		console.log({TIMEOUTS});
-		
 		return (
 			<div className={`${PRE_ADMIN}-team-controls ${teamIndex === 0 ? 'left' : 'right'}`}>
-				<button onClick={() => dispatch({ type: `incrementScore`, id: teamIndex, value: 6 })}>Touchdown</button>
-				<button onClick={() => dispatch({ type: `incrementScore`, id: teamIndex, value: 1 })}>Extra Point</button>
-				<button onClick={() => dispatch({ type: `incrementScore`, id: teamIndex, value: 3 })}>Field Goal</button>
-				<button onClick={() => dispatch({ type: `incrementScore`, id: teamIndex, value: 2 })}>2-pt. Conversion</button>
+				<div className={`${PRE_ADMIN}-team-controls-scoring`}>
+					<div className={`${PRE_ADMIN}-team-controls-scoring-label`}>Increment {state.teamData[teamIndex].teamName}'s score:</div>
+					<button onClick={() => dispatch({ type: `incrementScore`, id: teamIndex, value: 6 })}>Touchdown</button>
+					<button onClick={() => dispatch({ type: `incrementScore`, id: teamIndex, value: 1 })}>Extra Point</button>
+					<button onClick={() => dispatch({ type: `incrementScore`, id: teamIndex, value: 3 })}>Field Goal</button>
+					<button onClick={() => dispatch({ type: `incrementScore`, id: teamIndex, value: 2 })}>2-pt. Conversion</button>
+				</div>
+				<div className={`${PRE_ADMIN}-team-controls-data`}>
+					<div className={`${PRE_ADMIN}-team-controls-data-label`}>Change {state.teamData[teamIndex].teamName}'s data:</div>
+					<input placeholder="New Logo URL" onChange={(e) => dispatch({ type: 'changeTeamLogo', id: teamIndex, value: e.target.value })} />
+				</div>
 			</div>
 		);
 	};
@@ -114,11 +123,14 @@ const Scoreboard = ({ isAdmin }) => {
 			<div className={`${PRE}-title`}>Football Scoreboard</div>
 			<div className={`${PRE}-teams`}>
 				{TEAMS.map((team, teamIndex) => {
-					console.log({state});
-					const { teamInfo, teamLogo, teamName, timeoutsLeft, score } = state.teamData[teamIndex];
+					const { teamLogo, teamName, timeoutsLeft, score } = state.teamData[teamIndex];
+					const isPossessing = state.teamPossessing === teamIndex;
 
 					return (
 						<div className={`${PRE}-team-container ${teamIndex === 0 ? 'left' : 'right'}`}>
+							{isPossessing &&
+								<img className={`${PRE}-team-possession-icon`} src={'https://www.clipartmax.com/png/small/1-11974_american-football-clipart-american-football-ball-vector.png'} />
+							}
 							<div className={`${PRE}-team-name`}>{teamName}</div>
 							<div className={`${PRE}-team-logo-timeouts`}>
 								<img className={`${PRE}-team-logo`} src={teamLogo} />
